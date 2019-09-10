@@ -29,6 +29,7 @@ ARG PYTHON_DEPENDENCIES=" \
 
 ARG RUN_DEPENDENCIES=" \
         libxml2 \
+        locales \
     "
 
 # Build Dependencies (not required in final image)
@@ -72,6 +73,11 @@ RUN \
     echo "**** Install runtime dependencies ****" \
         && apt-get install -y --no-install-recommends \
             ${RUN_DEPENDENCIES} \
+    && \
+    echo "**** setup locales ****" \
+        && sed -i -e 's/^# en_US\.UTF-8/en_US.UTF-8/g' /etc/locale.gen \
+        && sed -i -e 's/^# th_TH\.UTF-8/th_TH.UTF-8/g' /etc/locale.gen \
+        && locale-gen \
     && \
     echo "**** Install package build tools ****" \
         && apt-get install -y --no-install-recommends \
