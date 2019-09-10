@@ -9,5 +9,5 @@ docker run -it --rm \
     --volume="${HOME}/.config/tizonia":/home/tizonia/.config/tizonia \
     --volume "${HOME}/.config/pulse/cookie":/home/tizonia/.config/pulse/cookie \
     --name tizonia \
-    tizonia/docker-tizonia "$@";
+    quay.io/bashell/tizonia:arm "$@";
 

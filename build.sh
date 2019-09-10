@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build --tag 'tizonia:latest' .
+docker build --tag 'quay.io/bashell/tizonia:arm' .

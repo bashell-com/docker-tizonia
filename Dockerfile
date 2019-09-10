@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM quay.io/bashell/ubuntu:arm
 LABEL maintainer "Josh Sunnex <jsunnex@gmail.com>"
 
 
@@ -27,6 +27,10 @@ ARG PYTHON_DEPENDENCIES=" \
         youtube-dl>=2019.8.2 \
     "
 
+ARG RUN_DEPENDENCIES=" \
+        libxml2 \
+    "
+
 # Build Dependencies (not required in final image)
 ARG BUILD_DEPENDENCIES=" \
         build-essential \
@@ -34,12 +38,27 @@ ARG BUILD_DEPENDENCIES=" \
         gnupg \
         libffi-dev \
         libssl-dev \
+        libxml2-dev \
+        libxslt1-dev \
         python-dev \
         python-pip \
         python-pkg-resources \
         python-setuptools \
         python-wheel \
     "
+
+# Missing packages from armhf index
+ARG MISSING_PACKAGES=" \
+        tizilheaders \
+        python-tizgmusicproxy \
+        python-tizsoundcloudproxy \
+        python-tizdirbleproxy \
+        python-tizyoutubeproxy \
+        python-tizplexproxy \
+        python-tizchromecastproxy \
+        python-tizspotifyproxy \
+    "
+ARG REPO_URL="https://dl.bintray.com/tizonia/ubuntu/pool/main/t/tizonia-bionic"
 
 ###############################################################
 
@@ -49,6 +68,10 @@ ARG BUILD_DEPENDENCIES=" \
 RUN \
     echo "**** Update sources ****" \
        && apt-get update \
+    && \
+    echo "**** Install runtime dependencies ****" \
+        && apt-get install -y --no-install-recommends \
+            ${RUN_DEPENDENCIES} \
     && \
     echo "**** Install package build tools ****" \
         && apt-get install -y --no-install-recommends \
@@ -68,6 +91,10 @@ RUN \
         && apt-get install -y \
             pulseaudio-utils \
             libspotify12 \
+        && for pkg in ${MISSING_PACKAGES}; do curl -sLO ${REPO_URL}/${pkg}_${TIZONIA_VERSION}_all.deb; done \
+        && dpkg -i *.deb \
+        && rm -f *.deb \
+        && apt-get install -y \
             tizonia-all=${TIZONIA_VERSION} \
     && \
     echo "**** create ${UNAME} user and make our folders ****" \
